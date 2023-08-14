@@ -138,7 +138,7 @@ public class App {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Ingrese la cantidad a depositar: $");
         double cantidad = scanner.nextDouble();
-
+    
         if (cantidad <= 0) {
             System.out.println("Cantidad no válida.");
         } else {
@@ -148,9 +148,13 @@ public class App {
                 preparedStatement.setDouble(1, cantidad);
                 preparedStatement.setInt(2, usuarioId);
                 int rowsAffected = preparedStatement.executeUpdate();
-
+    
                 if (rowsAffected > 0) {
-                    System.out.println("Depósito realizado con éxito. Su nuevo saldo es: $" + (saldo + cantidad));
+                    System.out.println("Depósito realizado con éxito.");
+                    // Registrar la operación de depósito en la tabla historico
+                    registrarOperacionHistorico(connection, "deposito", cantidad);
+    
+                    consultarSaldo(connection);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -162,7 +166,7 @@ public class App {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Ingrese la cantidad a retirar: $");
         double cantidad = scanner.nextDouble();
-
+    
         if (cantidad <= 0) {
             System.out.println("Cantidad no válida.");
         } else if (cantidad > saldo) {
@@ -174,9 +178,13 @@ public class App {
                 preparedStatement.setDouble(1, cantidad);
                 preparedStatement.setInt(2, usuarioId);
                 int rowsAffected = preparedStatement.executeUpdate();
-
+    
                 if (rowsAffected > 0) {
-                    System.out.println("Retiro realizado con éxito. Su nuevo saldo es: $" + (saldo - cantidad));
+                    System.out.println("Retiro realizado con éxito.");    
+                    // Registrar la operación de retiro en la tabla historico
+                    registrarOperacionHistorico(connection, "retiro", cantidad);
+    
+                    consultarSaldo(connection);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -213,5 +221,21 @@ public class App {
             System.out.println("Los PINs no coinciden.");
         }
     }
-}
 
+    public static void registrarOperacionHistorico(Connection connection, String tipoOperacion, double cantidad) {
+        String insertQuery = "INSERT INTO historico (usuario_id, tipo_operacion, cantidad) VALUES (?, ?, ?)";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
+            preparedStatement.setInt(1, usuarioId);
+            preparedStatement.setString(2, tipoOperacion);
+            preparedStatement.setDouble(3, cantidad);
+            int rowsAffected = preparedStatement.executeUpdate();
+    
+            if (rowsAffected > 0) {
+                System.out.println("Operación registrada en histórico.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
