@@ -2,6 +2,7 @@
 -- Crear la tabla de usuarios (modificada para incluir el nombre)
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario VARCHAR(30) UNIQUE,
     nombre VARCHAR(255) NOT NULL,
     pin INT NOT NULL,
     saldo DOUBLE NOT NULL
@@ -19,12 +20,12 @@ CREATE TABLE IF NOT EXISTS historico (
 
 -- Insertar datos de ejemplo
 -- Insertar datos de ejemplo en usuarios
-INSERT INTO usuarios (nombre, pin, saldo) VALUES 
-('Juan Perez', 1234, 1000.0),
-('Ana Ramirez', 5678, 2500.0),
-('Carlos Gomez', 9012, 500.0),
-('Marta Torres', 3456, 750.0),
-('Luisa Fernandez', 7890, 3000.0);
+INSERT INTO usuarios (id, usuario, nombre, pin, saldo) VALUES
+(1, 'jperez', 'Juan Perez', 1234, 1000.0),
+(2, 'aramirez', 'Ana Ramirez', 5678, 2500.0),
+(3, 'cgomez', 'Carlos Gomez', 9012, 500.0),
+(4, 'mtorres', 'Marta Torres', 3456, 750.0),
+(5, 'lfernandez', 'Luisa Fernandez', 7890, 3000.0);
 
 -- Insertar datos de ejemplo en historico (asumiendo que los IDs de los usuarios coinciden con los valores insertados anteriormente)
 -- Juan Perez hizo un depósito de 200.0
