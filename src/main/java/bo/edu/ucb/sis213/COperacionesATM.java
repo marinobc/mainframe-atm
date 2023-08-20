@@ -181,11 +181,7 @@ public class COperacionesATM {
             preparedStatement.setInt(1, usuarioId);
             preparedStatement.setString(2, tipoOperacion);
             preparedStatement.setDouble(3, cantidad);
-            int rowsAffected = preparedStatement.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("Operación registrada en histórico.");
-            }
+            preparedStatement.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }

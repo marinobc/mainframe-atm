@@ -17,10 +17,8 @@ import java.awt.event.ActionEvent;
 public class VMenu extends JFrame {
 
 	private JPanel contentPane;
+	UsuarioActivo id = UsuarioActivo.getInstance();
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -34,9 +32,6 @@ public class VMenu extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public VMenu() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -46,7 +41,7 @@ public class VMenu extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblBienvenido = new JLabel("Bienvenido \"inserte nombre\"");
+		JLabel lblBienvenido = new JLabel("Bienvenido "+id.getUsuario());
 		lblBienvenido.setHorizontalAlignment(SwingConstants.CENTER);
 		lblBienvenido.setFont(new Font("Segoe UI", Font.BOLD, 20));
 		lblBienvenido.setBounds(17, 20, 400, 30);
