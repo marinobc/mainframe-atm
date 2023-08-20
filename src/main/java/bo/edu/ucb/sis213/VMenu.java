@@ -1,3 +1,6 @@
+
+package bo.edu.ucb.sis213;
+
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -100,7 +103,6 @@ public class VMenu extends JFrame {
 		JButton btnCierre = new JButton("CERRAR SESION");
 		btnCierre.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				MConexion.closeConnection(null);
 				dispose();
 				VLogin salir = new VLogin();
 				salir.setVisible(true);
@@ -115,16 +117,5 @@ public class VMenu extends JFrame {
 		lblOperacion.setHorizontalAlignment(SwingConstants.CENTER);
 		lblOperacion.setBounds(67, 60, 300, 20);
 		contentPane.add(lblOperacion);
-		
-		UsuarioActivo activo = UsuarioActivo.getInstance();
-		String a=activo.getUsuario();
-		System.out.println(a);
-		
-		boolean isConnected = MConexion.isConnectionOpen();
-        if (isConnected) {
-            System.out.println("La conexión a la base de datos está abierta.");
-        } else {
-            System.out.println("La conexión a la base de datos está cerrada o hay un problema.");
-        }
 	}
 }

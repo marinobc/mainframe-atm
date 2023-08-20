@@ -1,3 +1,6 @@
+
+package bo.edu.ucb.sis213;
+
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -9,16 +12,15 @@ import javax.swing.SwingConstants;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 
 public class VDeposito extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField tfDeposito;
+	JLabel lblDMensaje = new JLabel("");
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -32,9 +34,6 @@ public class VDeposito extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public VDeposito() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -63,11 +62,27 @@ public class VDeposito extends JFrame {
 		tfDeposito.setColumns(10);
 
 		JButton btnDAceptar = new JButton("Aceptar");
+		btnDAceptar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String mensaje="";
+				try {
+					mensaje = COperacionesATM.realizarDeposito(tfDeposito.getText());
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+				lblDMensaje.setText(mensaje);
+			}
+		});
 		btnDAceptar.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		btnDAceptar.setBounds(256, 160, 100, 30);
 		contentPane.add(btnDAceptar);
 		
 		JButton btnDBorrar = new JButton("Borrar");
+		btnDBorrar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				tfDeposito.setText("");
+			}
+		});
 		btnDBorrar.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		btnDBorrar.setBounds(240, 105, 70, 20);
 		contentPane.add(btnDBorrar);
@@ -84,18 +99,9 @@ public class VDeposito extends JFrame {
 		btnDMenu.setBounds(78, 160, 100, 30);
 		contentPane.add(btnDMenu);
 
-		JLabel lblDMensaje = new JLabel("");
 		lblDMensaje.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDMensaje.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		lblDMensaje.setBounds(117, 215, 200, 20);
+		lblDMensaje.setBounds(67, 215, 300, 20);
 		contentPane.add(lblDMensaje);
-		
-		
-		boolean isConnected = MConexion.isConnectionOpen();
-        if (isConnected) {
-            System.out.println("La conexión a la base de datos está abierta.");
-        } else {
-            System.out.println("La conexión a la base de datos está cerrada o hay un problema.");
-        }
 	}
 }

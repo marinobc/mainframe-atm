@@ -1,3 +1,6 @@
+
+package bo.edu.ucb.sis213;
+
 import java.awt.EventQueue;
 import java.awt.Font;
 
@@ -19,12 +22,10 @@ public class VLogin extends JFrame {
 	private JPanel contentPane;
 	private JTextField tfPin;
 	private JTextField tfUsuario;
-	private int s = 3;
-	
+	JLabel lblIntentos = new JLabel("");
+	MValidacion validar = new MValidacion();
+	UsuarioActivo datos = UsuarioActivo.getInstance();
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -38,9 +39,6 @@ public class VLogin extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public VLogin() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -74,7 +72,6 @@ public class VLogin extends JFrame {
 		contentPane.add(tfPin);
 		
 		tfUsuario = new JTextField();
-		tfUsuario.setToolTipText("\r\n");
 		tfUsuario.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tfUsuario.setBounds(195, 100, 110, 20);
 		contentPane.add(tfUsuario);
@@ -84,17 +81,15 @@ public class VLogin extends JFrame {
 		btnSesion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					int intentos = s;
-					MValidacion validar = new MValidacion();
-					s = validar.validar(tfUsuario.getText(), tfPin.getText(), intentos);
-					if(s==-1) {
+					if(validar.validar(tfUsuario.getText(), tfPin.getText())==-1) {
 						dispose();
 						VMenu menu = new VMenu();
 						menu.setVisible(true);
 					}
-					if(s==0) {
+					if(datos.getIntentos()==0) {
 						System.exit(0);
 					}
+					lblIntentos.setText("Le quedan "+datos.getIntentos()+" intentos");
 					tfUsuario.setText("");
 					tfPin.setText("");
 					
@@ -107,19 +102,9 @@ public class VLogin extends JFrame {
 		btnSesion.setBounds(162, 190, 110, 20);
 		contentPane.add(btnSesion);
 		
-		
-		
-		boolean isConnected = MConexion.isConnectionOpen();
-        if (isConnected) {
-            System.out.println("La conexión a la base de datos está abierta.");
-        } else {
-            System.out.println("La conexión a la base de datos está cerrada o hay un problema.");
-        }
-		/*
-		UsuarioActivo despies = UsuarioActivo.getInstance();
-		String b = despies.getUsuario();
-		int c = despies.getId();
-		System.out.println(b + " " + c);
-		*/
+		lblIntentos.setHorizontalAlignment(SwingConstants.CENTER);
+		lblIntentos.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		lblIntentos.setBounds(117, 230, 200, 20);
+		contentPane.add(lblIntentos);
 	}
 }

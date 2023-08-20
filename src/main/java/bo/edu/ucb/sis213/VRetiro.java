@@ -1,3 +1,6 @@
+
+package bo.edu.ucb.sis213;
+
 import java.awt.EventQueue;
 import java.awt.Font;
 
@@ -9,16 +12,15 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 
 public class VRetiro extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField tfRetiro;
+	JLabel lblRMensaje = new JLabel("");
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -32,9 +34,6 @@ public class VRetiro extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public VRetiro() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -63,6 +62,11 @@ public class VRetiro extends JFrame {
 		contentPane.add(tfRetiro);
 		
 		JButton btnRBorrar = new JButton("Borrar");
+		btnRBorrar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				tfRetiro.setText("");
+			}
+		});
 		btnRBorrar.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		btnRBorrar.setBounds(240, 105, 70, 20);
 		contentPane.add(btnRBorrar);
@@ -80,14 +84,24 @@ public class VRetiro extends JFrame {
 		contentPane.add(btnRMenu);
 		
 		JButton btnRAceptar = new JButton("Aceptar");
+		btnRAceptar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String mensaje="";
+				try {
+					mensaje = COperacionesATM.realizarRetiro(tfRetiro.getText());
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+				lblRMensaje.setText(mensaje);
+			}
+		});
 		btnRAceptar.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		btnRAceptar.setBounds(256, 160, 100, 30);
 		contentPane.add(btnRAceptar);
 		
-		JLabel lblRMensaje = new JLabel("");
 		lblRMensaje.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRMensaje.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		lblRMensaje.setBounds(117, 215, 200, 20);
+		lblRMensaje.setBounds(67, 215, 300, 20);
 		contentPane.add(lblRMensaje);
 	}
 

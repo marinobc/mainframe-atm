@@ -1,7 +1,11 @@
+
+package bo.edu.ucb.sis213;
+
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -16,10 +20,8 @@ public class VPin extends JFrame {
 	private JPanel contentPane;
 	private JTextField tfPActual;
 	private JTextField tfPNuevo;
+	JLabel lblPMensaje = new JLabel("");
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -33,9 +35,6 @@ public class VPin extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public VPin() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -76,6 +75,18 @@ public class VPin extends JFrame {
 		contentPane.add(tfPNuevo);
 		
 		JButton btnDAceptar = new JButton("Aceptar");
+		btnDAceptar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String mensaje="";
+				try {
+					mensaje = COperacionesATM.cambiarPIN(tfPNuevo.getText(), tfPActual.getText());
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+				lblPMensaje.setText(mensaje);
+				
+			}
+		});
 		btnDAceptar.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		btnDAceptar.setBounds(256, 195, 100, 30);
 		contentPane.add(btnDAceptar);
@@ -92,7 +103,6 @@ public class VPin extends JFrame {
 		btnDMenu.setBounds(78, 195, 100, 30);
 		contentPane.add(btnDMenu);
 		
-		JLabel lblPMensaje = new JLabel("");
 		lblPMensaje.setHorizontalAlignment(SwingConstants.CENTER);
 		lblPMensaje.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		lblPMensaje.setBounds(117, 235, 200, 20);

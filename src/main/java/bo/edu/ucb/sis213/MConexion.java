@@ -1,3 +1,6 @@
+
+package bo.edu.ucb.sis213;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -20,32 +23,4 @@ public class MConexion {
         }
         return DriverManager.getConnection(jdbcUrl, USER, PASSWORD);
     }
-	
-	public static void closeConnection(Connection connection) {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-	
-	
-	
-	
-	
-	
-	public static boolean isConnectionOpen() {
-	    Connection connection = null;
-	    try {
-	        connection = getConnection();
-	        return !connection.isClosed();
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        return false;
-	    } finally {
-	        closeConnection(connection);
-	    }
-	}
 }

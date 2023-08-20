@@ -1,3 +1,6 @@
+
+package bo.edu.ucb.sis213;
+
 import java.awt.EventQueue;
 import java.awt.Font;
 
@@ -7,40 +10,27 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JToggleButton;
-import javax.swing.JSpinner;
-import javax.swing.JTable;
 import javax.swing.JTextArea;
 import java.awt.Color;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 public class VHistorico extends JFrame {
 
 	private JPanel contentPane;
+	UsuarioActivo id = UsuarioActivo.getInstance();
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				try {
-					VHistorico frame = new VHistorico();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				VHistorico frame = new VHistorico();
+				frame.setVisible(true);
 			}
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public VHistorico() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -62,22 +52,25 @@ public class VHistorico extends JFrame {
 		lblHMonto.setBounds(110, 70, 100, 20);
 		contentPane.add(lblHMonto);
 		
-		JLabel lblSaldo = new JLabel("36012");
+		JLabel lblSaldo = new JLabel("");
+		try {
+			lblSaldo.setText(COperacionesATM.consultarSaldo());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		lblSaldo.setHorizontalAlignment(SwingConstants.LEFT);
 		lblSaldo.setFont(new Font("Segoe UI", Font.BOLD, 14));
 		lblSaldo.setBounds(220, 70, 100, 20);
 		contentPane.add(lblSaldo);
-		/*
-		TextArea taHistorico = new TextArea();
-		taHistorico.setBackground(new Color(240, 240, 240));
-		taHistorico.setText("dfgdfgdgf\r\ndfgdfgdgf\r\ndfgdfgdgf\r\ndfgdfgdgf\r\ndfgdfgdgf\r\ndfgdfgdgf\r\ndfgdfgdgf\r\ndfgdfgdgf\r\ndfgdfgdgf\r\ndfgdfgdgf\r\ndfgdfgdgf\r\ndfgdfgdgf\r\ndfgdfgdgf\r\ndfgdfgdgf\r\ndfgdfgdgf\r\ndfgdfgdgf\r\ndfgdfgdgf\r\nv\r\ndfgdfgdgf\r\ndfgdfgdgf");
-		taHistorico.setBounds(17, 140, 400, 110);
-		contentPane.add(taHistorico);
-		*/
+
 		JTextArea taHistorico = new JTextArea();
 		taHistorico.setEditable(false);
 		taHistorico.setBackground(new Color(240, 240, 240));
-		taHistorico.setText("asdasd");
+		try {
+			taHistorico.setText(COperacionesATM.consultarHistoricoCliente(id.getId()));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
 		JScrollPane BarraDesplazamiento = new JScrollPane(taHistorico);
 		BarraDesplazamiento.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -85,6 +78,16 @@ public class VHistorico extends JFrame {
 		contentPane.add(BarraDesplazamiento);
 		
 		JButton btnDAceptar = new JButton("Aceptar");
+		btnDAceptar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					lblSaldo.setText(COperacionesATM.consultarSaldo());
+					taHistorico.setText(COperacionesATM.consultarHistoricoCliente(id.getId()));
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
 		btnDAceptar.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		btnDAceptar.setBounds(256, 220, 100, 30);
 		contentPane.add(btnDAceptar);
