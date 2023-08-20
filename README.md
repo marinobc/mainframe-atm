@@ -87,4 +87,4 @@ use atm;
 ```
 
 5. **Inicialización**:
-Ejecuta el script `init.sql` ubicado en la carpeta `database` si no se tiene una anterior. Si se tiene una existente, ejecutar `mod.sql`
+Ejecuta el script `init.sql` ubicado en la carpeta `database`.
