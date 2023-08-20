@@ -98,6 +98,7 @@ public class VMenu extends JFrame {
 		JButton btnCierre = new JButton("CERRAR SESION");
 		btnCierre.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				id.setId(0);
 				dispose();
 				VLogin salir = new VLogin();
 				salir.setVisible(true);

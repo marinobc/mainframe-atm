@@ -117,6 +117,9 @@ public class COperacionesATM {
     // Método para cambiar el PIN del usuario
     public static String cambiarPIN(String nuevoPin, String pinAnterior) throws SQLException {
         // Comprobar si ambos PINs son numéricos
+        if (nuevoPin.isEmpty() || pinAnterior.isEmpty()) {
+            return "No puede dejar los campos vacios";
+        }
         try {
             int revision;
             revision = Integer.parseInt(nuevoPin);
@@ -150,8 +153,6 @@ public class COperacionesATM {
 
                         if (rowsAffected > 0) {
                             return "PIN actualizado con éxito.";
-                        } else {
-                            return "No se pudo actualizar el PIN.";
                         }
                     } catch (SQLException e) {
                         e.printStackTrace();
