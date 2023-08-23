@@ -1,16 +1,55 @@
 
-package bo.edu.ucb.sis213;
+package bo.edu.ucb.sis213.Bl;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class COperacionesATM {
+import bo.edu.ucb.sis213.Dao.MConexion;
+import bo.edu.ucb.sis213.Util.UsuarioActivo;
+
+public class UsuariosBl {
 
     // Variables estáticas para mantener el ID del usuario y el saldo
     private static int usuarioId;
     private static BigDecimal saldo = BigDecimal.ZERO;
+
+    // Método para validar el usuario y pin proporcionados.
+    // Devuelve -1 si la validación es exitosa y 0 en caso contrario.
+    public static int validar(String usuario, String pin) throws IOException, SQLException {
+        // Obtenemos una instancia de la clase UsuarioActivo.
+        UsuarioActivo almacenar = UsuarioActivo.getInstance();
+
+        // Establecemos una conexión a la base de datos usando la clase MConexion.
+        java.sql.Connection llamar = MConexion.getConnection();
+
+        // Preparamos una consulta SQL para buscar un usuario con el usuario y pin especificados.
+        String consulta = "SELECT * FROM usuarios WHERE usuario = ? AND pin = ?";
+
+        try (PreparedStatement statement = llamar.prepareStatement(consulta)) {
+            // Establecemos los parámetros para la consulta.
+            statement.setString(1, usuario);
+            statement.setString(2, pin);
+
+            // Ejecutamos la consulta.
+            ResultSet rs = statement.executeQuery();
+
+            // Si se encuentra un resultado, significa que el usuario y el pin son válidos.
+            if (rs.next()) {
+                // Almacenamos la información del usuario en la instancia de UsuarioActivo.
+                almacenar.setId(rs.getInt("id"));
+                almacenar.setUsuario(rs.getString("usuario"));
+                almacenar.setIntentos(3); // Restablecemos el contador de intentos a 3.
+                return -1; // Indicamos que la validación fue exitosa.
+            }
+        }
+
+        // La validación falló. Reducimos el contador de intentos en 1.
+        almacenar.setIntentos(almacenar.getIntentos() - 1);
+        return 0; // Indicamos que la validación no fue exitosa.
+    }
 
     // Método para consultar el saldo de un usuario
     public static String consultarSaldo() throws SQLException {
@@ -66,7 +105,7 @@ public class COperacionesATM {
 
                 // Si la actualización es exitosa, registra la operación y devuelve el saldo
                 if (rowsAffected > 0) {
-                    registrarOperacionHistorico("Deposito", cantidad);
+                    HistoricoBl.registrarOperacionHistorico("Deposito", cantidad);
                     return "Depósito realizado con éxito. Su saldo es " + consultarSaldo();
                 }
             }
@@ -104,7 +143,7 @@ public class COperacionesATM {
 
                 // Si la actualización es exitosa, registra la operación y devuelve el saldo
                 if (rowsAffected > 0) {
-                    registrarOperacionHistorico("Retiro", cantidad);
+                    HistoricoBl.registrarOperacionHistorico("Retiro", cantidad);
                     return "Retiro realizado con éxito. Su saldo es " + consultarSaldo();
                 }
             }
@@ -168,55 +207,5 @@ public class COperacionesATM {
             return "Error al consultar el PIN actual.";
         }
         return "Error al cambiar el PIN.";
-    }
-
-    // Método para registrar la operación (retiro o depósito) en el historial
-    public static void registrarOperacionHistorico(String tipoOperacion, BigDecimal cantidad) throws SQLException {
-        java.sql.Connection llamar = MConexion.getConnection();
-        UsuarioActivo id = UsuarioActivo.getInstance();
-        usuarioId = id.getId();
-
-        // Consulta SQL para insertar en el histórico
-        String insertQuery = "INSERT INTO historico (usuario_id, tipo_operacion, cantidad) VALUES (?, ?, ?)";
-        try {
-            PreparedStatement preparedStatement = llamar.prepareStatement(insertQuery);
-            preparedStatement.setInt(1, usuarioId);
-            preparedStatement.setString(2, tipoOperacion);
-            preparedStatement.setBigDecimal(3, cantidad);
-            preparedStatement.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Método para consultar el historial de un cliente
-    public static String consultarHistoricoCliente(int idCliente) throws SQLException {
-        java.sql.Connection llamar = MConexion.getConnection();
-
-        // Consulta SQL para obtener historial del cliente
-        String consultaHistorico = "SELECT tipo_operacion, cantidad FROM historico WHERE usuario_id = ?";
-        try {
-            PreparedStatement preparedStatement = llamar.prepareStatement(consultaHistorico);
-            preparedStatement.setInt(1, idCliente);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            StringBuilder historico = new StringBuilder();
-            historico.append("Monto | Tipo Operacion\n");
-
-            // Mientras haya resultados, añade la operación y la cantidad al historial
-            while (resultSet.next()) {
-                String tipoOperacion = resultSet.getString("tipo_operacion");
-                BigDecimal cantidad = resultSet.getBigDecimal("cantidad");
-
-                String signoMonto = tipoOperacion.equalsIgnoreCase("retiro") ? "-" : "+";
-                historico.append(String.format("%s%s  %s\n", signoMonto, cantidad.toPlainString(), tipoOperacion));
-            }
-
-            return historico.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return "Error al consultar el historial del cliente.";
     }
 }

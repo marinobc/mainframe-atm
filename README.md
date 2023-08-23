@@ -58,7 +58,7 @@ mvn clean install
 
 ### Ejecución:
 ```bash
-mvn exec:java -Dexec.mainClass="bo.edu.ucb.sis213.VLogin"
+mvn exec:java -Dexec.mainClass="bo.edu.ucb.sis213.View.VLogin"
 ```
 
 ## Configuración de la Base de Datos

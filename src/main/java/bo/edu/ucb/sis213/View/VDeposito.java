@@ -1,5 +1,5 @@
 
-package bo.edu.ucb.sis213;
+package bo.edu.ucb.sis213.View;
 
 import java.awt.EventQueue;
 
@@ -14,6 +14,8 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.awt.event.ActionEvent;
+
+import bo.edu.ucb.sis213.Bl.UsuariosBl;
 
 public class VDeposito extends JFrame {
 
@@ -66,7 +68,7 @@ public class VDeposito extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				String mensaje="";
 				try {
-					mensaje = COperacionesATM.realizarDeposito(tfDeposito.getText());
+					mensaje = UsuariosBl.realizarDeposito(tfDeposito.getText());
 				} catch (SQLException e1) {
 					e1.printStackTrace();
 				}
