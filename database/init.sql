@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     usuario VARCHAR(30) UNIQUE,
     nombre VARCHAR(255) NOT NULL,
     pin INT NOT NULL,
-    saldo DOUBLE NOT NULL
+    saldo DECIMAL(20,2) NOT NULL
 );
 
 -- Crear la tabla de historico
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS historico (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT,
     tipo_operacion VARCHAR(50) NOT NULL,
-    cantidad DOUBLE,
+    cantidad DECIMAL(20,2),
     fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );

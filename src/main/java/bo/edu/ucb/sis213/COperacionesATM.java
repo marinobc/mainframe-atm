@@ -1,6 +1,7 @@
 
 package bo.edu.ucb.sis213;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,7 +10,7 @@ public class COperacionesATM {
 
     // Variables estáticas para mantener el ID del usuario y el saldo
     private static int usuarioId;
-    private static double saldo;
+    private static BigDecimal saldo = BigDecimal.ZERO;
 
     // Método para consultar el saldo de un usuario
     public static String consultarSaldo() throws SQLException {
@@ -30,15 +31,15 @@ public class COperacionesATM {
 
             // Si la consulta tiene resultados, asigna el saldo y lo devuelve
             if (resultSet.next()) {
-                double saldo = resultSet.getDouble("saldo");
-                return String.valueOf(saldo);
+                saldo = resultSet.getBigDecimal("saldo");
+                return saldo.toString();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         // Si no se encontró el saldo, devuelve 0
-        return String.valueOf(saldo);
+        return saldo.toString();
     }
 
     // Método para realizar un depósito
@@ -48,9 +49,9 @@ public class COperacionesATM {
         }
         try {
             // Convertir la cantidad de depósito a double
-            double cantidad = Double.parseDouble(deposito);
+            BigDecimal cantidad = new BigDecimal(deposito);
 
-            if (cantidad > 0) {
+            if (cantidad.compareTo(BigDecimal.ZERO) > 0) {
                 java.sql.Connection llamar = MConexion.getConnection();
                 UsuarioActivo id = UsuarioActivo.getInstance();
                 usuarioId = id.getId();
@@ -58,7 +59,7 @@ public class COperacionesATM {
                 // Consulta SQL para actualizar el saldo del usuario
                 String consultaActualizar = "UPDATE usuarios SET saldo = saldo + ? WHERE id = ?";
                 PreparedStatement preparedStatement = llamar.prepareStatement(consultaActualizar);
-                preparedStatement.setDouble(1, cantidad);
+                preparedStatement.setBigDecimal(1, cantidad);
                 preparedStatement.setInt(2, usuarioId);
 
                 int rowsAffected = preparedStatement.executeUpdate();
@@ -83,12 +84,12 @@ public class COperacionesATM {
         }
         try {
             // Convertir la cantidad de retiro a double
-            double cantidad = Double.parseDouble(retiro);
+            BigDecimal cantidad = new BigDecimal(retiro);
 
-            if (cantidad > Double.parseDouble(consultarSaldo())) {
+            if (cantidad.compareTo(new BigDecimal(consultarSaldo())) > 0) {
                 return "Saldo insuficiente";
             }
-            if (cantidad > 0) {
+            if (cantidad.compareTo(BigDecimal.ZERO) > 0) {
                 java.sql.Connection llamar = MConexion.getConnection();
                 UsuarioActivo id = UsuarioActivo.getInstance();
                 usuarioId = id.getId();
@@ -96,7 +97,7 @@ public class COperacionesATM {
                 // Consulta SQL para actualizar el saldo del usuario
                 String consultaActualizar = "UPDATE usuarios SET saldo = saldo - ? WHERE id = ?";
                 PreparedStatement preparedStatement = llamar.prepareStatement(consultaActualizar);
-                preparedStatement.setDouble(1, cantidad);
+                preparedStatement.setBigDecimal(1, cantidad);
                 preparedStatement.setInt(2, usuarioId);
 
                 int rowsAffected = preparedStatement.executeUpdate();
@@ -170,7 +171,7 @@ public class COperacionesATM {
     }
 
     // Método para registrar la operación (retiro o depósito) en el historial
-    public static void registrarOperacionHistorico(String tipoOperacion, double cantidad) throws SQLException {
+    public static void registrarOperacionHistorico(String tipoOperacion, BigDecimal cantidad) throws SQLException {
         java.sql.Connection llamar = MConexion.getConnection();
         UsuarioActivo id = UsuarioActivo.getInstance();
         usuarioId = id.getId();
@@ -181,7 +182,7 @@ public class COperacionesATM {
             PreparedStatement preparedStatement = llamar.prepareStatement(insertQuery);
             preparedStatement.setInt(1, usuarioId);
             preparedStatement.setString(2, tipoOperacion);
-            preparedStatement.setDouble(3, cantidad);
+            preparedStatement.setBigDecimal(3, cantidad);
             preparedStatement.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -205,10 +206,10 @@ public class COperacionesATM {
             // Mientras haya resultados, añade la operación y la cantidad al historial
             while (resultSet.next()) {
                 String tipoOperacion = resultSet.getString("tipo_operacion");
-                double cantidad = resultSet.getDouble("cantidad");
+                BigDecimal cantidad = resultSet.getBigDecimal("cantidad");
 
                 String signoMonto = tipoOperacion.equalsIgnoreCase("retiro") ? "-" : "+";
-                historico.append(String.format("%s%.2f  %s\n", signoMonto, cantidad, tipoOperacion));
+                historico.append(String.format("%s%s  %s\n", signoMonto, cantidad.toPlainString(), tipoOperacion));
             }
 
             return historico.toString();
